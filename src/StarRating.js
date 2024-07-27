@@ -30,7 +30,7 @@ export default function StarRating({
 
   function handelRating(rating) {
       setRating(rating);
-      setStarRating(rating);
+      setStarRating && setStarRating(rating);
   }
   return (
     <div style={containerStyles}>
