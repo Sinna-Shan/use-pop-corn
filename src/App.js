@@ -53,11 +53,15 @@ const average = (arr) =>
 
 export default function App() {
   const [movies, setMovies] = useState([]);
-  const [watched, setWatched] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [query, setQuery] = useState("");
   const [selectedId, setSelectedId] = useState(null);
+  
+  // const [watched, setWatched] = useState([]);
+  const [watched, setWatched] = useState(function () {
+    return JSON.parse(localStorage.getItem('watched'));
+  });
 
   function handleSelectedMovie(id) {
     setSelectedId((selectedId) => (id === selectedId ? null : id));
@@ -67,13 +71,21 @@ export default function App() {
     setSelectedId(null);
   }
 
-  function handleWatched(movie) {
+  function handleAddWatched(movie) {
     setWatched((watched) => [...watched, movie]);
+    // localStorage.setItem('watched', JSON.stringify([...watched, movie]));
   }
 
   function handleDeleteWatched(id) {
     setWatched(watched.filter((watched) => watched.imdbID !== id));
   }
+
+  useEffect(
+    function () {
+      localStorage.setItem("watched", JSON.stringify(watched));
+    },
+    [watched]
+  );
 
   useEffect(
     function () {
@@ -143,7 +155,7 @@ export default function App() {
             <MovieDetails
               selectedId={selectedId}
               onCloseMovie={handleCloseMovie}
-              onAddWatched={handleWatched}
+              onAddWatched={handleAddWatched}
               watched={watched}
             />
           ) : (
@@ -279,16 +291,16 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
 
   useEffect(
     function () {
-      function callback(e){
+      function callback(e) {
         if (e.key === "Escape") {
           onCloseMovie();
         }
-      };
+      }
       document.addEventListener("keydown", callback);
 
       return function () {
         document.removeEventListener("keydown", callback);
-      }
+      };
     },
     [onCloseMovie]
   );
